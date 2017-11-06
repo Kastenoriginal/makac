@@ -32,7 +32,7 @@
             android:name="sk.tuke.smart.makac.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name="sk.tuke.smart.makac.StopwatchActivity" />
-        <activity android:name="sk.tuke.smart.makac.WorkoutDetailActivity"></activity>
+        <activity android:name="sk.tuke.smart.makac.WorkoutDetailActivity" />
     </application>
 
 </manifest>
