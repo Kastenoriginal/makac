@@ -2,4 +2,11 @@
     <string name="app_name">Makac</string>
     <string name="title_activity_maps">Map</string>
     <string name="unit_metre">m</string>
+    <string name="duration">Duration</string>
+    <string name="zero">0</string>
+    <string name="distance">Distance</string>
+    <string name="pace">Pace</string>
+    <string name="unit_pace">min/km</string>
+    <string name="calories">Calories</string>
+    <string name="zero_time">00:00:00</string>
 </resources>

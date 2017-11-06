@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textview_stopwatch_labelduration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Duration" />
+            android:text="@string/duration" />
 
         <TextView
             android:id="@+id/textview_stopwatch_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            android:text="00:00:00"
+            android:text="@string/zero_time"
             android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textview_stopwatch_labeldistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Distance" />
+            android:text="@string/distance" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -39,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="32dp"
-                android:text="Distance"
+                android:text="@string/zero"
                 android:textSize="36sp" />
 
             <TextView
@@ -59,14 +60,14 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="0.5">
+                android:layout_weight="0.5"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textview_stopwatch_labelpace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pace" />
+                    android:text="@string/pace" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -77,14 +78,14 @@
                         android:id="@+id/textview_stopwatch_pace"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pace"
+                        android:text="@string/zero"
                         android:textSize="30sp" />
 
                     <TextView
                         android:id="@+id/textview_stopwatch_unitpace"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="min/km" />
+                        android:text="@string/unit_pace" />
 
                 </LinearLayout>
 
@@ -93,14 +94,14 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_weight="0.5">
+                android:layout_weight="0.5"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textview_stopwatch_labelcalories"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Calories" />
+                    android:text="@string/calories" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -111,7 +112,7 @@
                         android:id="@+id/textview_stopwatch_calories"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Calories"
+                        android:text="@string/zero"
                         android:textSize="30sp" />
 
                     <TextView
@@ -126,33 +127,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_stopwatch_selectsport"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sport" />
+
+            <Button
+                android:id="@+id/button_stopwatch_start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Start" />
+
+            <Button
+                android:id="@+id/button_stopwatch_endworkout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="End"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/button_stopwatch_selectsport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sport" />
-
-        <Button
-            android:id="@+id/button_stopwatch_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start" />
-
-        <Button
-            android:id="@+id/button_stopwatch_endworkout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End"
-            android:visibility="gone" />
-
-    </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>
