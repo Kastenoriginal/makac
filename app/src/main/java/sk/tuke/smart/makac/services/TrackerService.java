@@ -8,14 +8,18 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
-public class TrackerService extends Service implements LocationListener {
+public class TrackerService extends Service implements LocationListener, MapsCallbackListener {
 
     private final Context context;
+    private final IBinder binder = new LocalBinder();
+
+    private MapsCallbackListener callback;
 
     boolean isGPSEnabled = false;
     boolean canGetLocation = false;
@@ -42,12 +46,16 @@ public class TrackerService extends Service implements LocationListener {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
+    }
+
+    public void setCallbacks(MapsCallbackListener callback) {
+        this.callback = callback;
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        // TODO: 11/6/2017
+        LocationChanged();
     }
 
     @Override
@@ -139,5 +147,18 @@ public class TrackerService extends Service implements LocationListener {
     public static int countCalories() {
         // TODO: 11/6/2017
         return -1;
+    }
+
+    @Override
+    public void LocationChanged() {
+        if (callback != null) {
+            callback.LocationChanged();
+        }
+    }
+
+    public class LocalBinder extends Binder {
+        public TrackerService getService() {
+            return TrackerService.this;
+        }
     }
 }
