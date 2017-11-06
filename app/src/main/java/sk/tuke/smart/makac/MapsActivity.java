@@ -1,15 +1,14 @@
 package sk.tuke.smart.makac;
 
 import android.location.Location;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import sk.tuke.smart.makac.services.TrackerService;
 
@@ -22,10 +21,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_workoutmap);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        trackerService.stopUsingGPS();
+        super.onDestroy();
     }
 
     @Override
@@ -35,16 +38,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         trackerService = new TrackerService(this);
         if (trackerService.canGetLocation()) {
             Location location = trackerService.getLocation();
+            LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(current));
         }
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    @Override
-    protected void onDestroy() {
-        trackerService.stopUsingGPS();
-        super.onDestroy();
     }
 }

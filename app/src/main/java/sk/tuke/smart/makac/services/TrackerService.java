@@ -18,7 +18,6 @@ public class TrackerService extends Service implements LocationListener {
     private final Context context;
 
     boolean isGPSEnabled = false;
-    boolean isNetworkEnabled = false;
     boolean canGetLocation = false;
 
     Location location;
@@ -66,42 +65,24 @@ public class TrackerService extends Service implements LocationListener {
     public Location getLocation() {
         try {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-
-            // getting GPS status
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            // getting network status
-            isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
+            if (!isGPSEnabled) {
                 return null;
-            } else {
-                this.canGetLocation = true;
-                // First get location from Network Provider
-                if (isNetworkEnabled) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return null;
-                    }
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    if (locationManager != null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-                        }
-                    }
+            }
+
+            this.canGetLocation = true;
+
+            if (location == null) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return null;
                 }
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        if (locationManager != null) {
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
-                        }
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                if (locationManager != null) {
+                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (location != null) {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
                     }
                 }
             }
@@ -113,16 +94,16 @@ public class TrackerService extends Service implements LocationListener {
         return location;
     }
 
-    public double getLatitude(){
-        if(location != null){
+    public double getLatitude() {
+        if (location != null) {
             latitude = location.getLatitude();
         }
 
         return latitude;
     }
 
-    public double getLongitude(){
-        if(location != null){
+    public double getLongitude() {
+        if (location != null) {
             longitude = location.getLongitude();
         }
 
@@ -133,8 +114,8 @@ public class TrackerService extends Service implements LocationListener {
         return this.canGetLocation;
     }
 
-    public void stopUsingGPS(){
-        if(locationManager != null){
+    public void stopUsingGPS() {
+        if (locationManager != null) {
             locationManager.removeUpdates(TrackerService.this);
         }
     }
