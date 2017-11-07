@@ -16,6 +16,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import butterknife.ButterKnife;
 import sk.tuke.smart.makac.services.MapsCallbackListener;
 import sk.tuke.smart.makac.services.TrackerService;
 
@@ -28,6 +29,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        ButterKnife.bind(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_workoutmap);
         mapFragment.getMapAsync(this);
     }

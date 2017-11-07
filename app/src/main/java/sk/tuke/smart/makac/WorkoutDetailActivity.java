@@ -1,18 +1,54 @@
 package sk.tuke.smart.makac;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class WorkoutDetailActivity extends AppCompatActivity {
+
+    @BindView(R.id.textview_workoutdetail_workouttitle)
+    TextView tvWorkoutTitle;
+
+    @BindView(R.id.textview_workoutdetail_sportactivity)
+    TextView tvSportActivityType;
+
+    @BindView(R.id.textview_workoutdetail_activitydate)
+    TextView tvActivityDate;
+
+    @BindView(R.id.textview_workoutdetail_valueduration)
+    TextView tvActivityDuration;
+
+    @BindView(R.id.textview_workoutdetail_valuecalories)
+    TextView tvActivityCalories;
+
+    @BindView(R.id.textview_workoutdetail_valuedistance)
+    TextView tvActivityDistance;
+
+    @BindView(R.id.textview_workoutdetail_valueavgpace)
+    TextView tvActivityAvgPace;
+
+    private int sportActivity;
+    private long duration;
+    private double distance;
+    private double pace;
+    private double calories;
+    private ArrayList<List<Location>> finalPositionList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_detail);
+        ButterKnife.bind(this);
     }
 
     @OnClick(R.id.button_workoutdetail_gplusshare)
