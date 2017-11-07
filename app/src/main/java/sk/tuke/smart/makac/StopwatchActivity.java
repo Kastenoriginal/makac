@@ -1,5 +1,6 @@
 package sk.tuke.smart.makac;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -41,6 +42,7 @@ public class StopwatchActivity extends AppCompatActivity {
         btnStartWorkout.setVisibility(View.GONE);
         btnPauseWorkout.setVisibility(View.VISIBLE);
         btnEndWorkout.setVisibility(View.VISIBLE);
+        sendBroadcastIntent(Constants.COMMAND_START);
     }
 
     @OnClick(R.id.button_stopwatch_endworkout)
@@ -49,6 +51,7 @@ public class StopwatchActivity extends AppCompatActivity {
         btnStartWorkout.setVisibility(View.VISIBLE);
         btnPauseWorkout.setVisibility(View.GONE);
         btnEndWorkout.setVisibility(View.GONE);
+        sendBroadcastIntent(Constants.COMMAND_STOP);
     }
 
     @OnClick(R.id.button_stopwatch_pause)
@@ -56,11 +59,19 @@ public class StopwatchActivity extends AppCompatActivity {
         TrackerService.pauseWorkout();
         btnContinueWorkout.setVisibility(View.VISIBLE);
         btnPauseWorkout.setVisibility(View.GONE);
+        sendBroadcastIntent(Constants.COMMAND_PAUSE);
     }
 
     @OnClick(R.id.button_stopwatch_continue)
     void continueWorkout() {
         btnContinueWorkout.setVisibility(View.GONE);
         btnPauseWorkout.setVisibility(View.VISIBLE);
+        sendBroadcastIntent(Constants.COMMAND_CONTINUE);
+    }
+
+    private void sendBroadcastIntent(String broadcastAction) {
+        Intent intent = new Intent();
+        intent.setAction(broadcastAction);
+        sendBroadcast(intent);
     }
 }
