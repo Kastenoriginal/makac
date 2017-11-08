@@ -2,11 +2,10 @@ package sk.tuke.smart.makac.helpers;
 
 import java.util.List;
 
+import sk.tuke.smart.makac.utils.Constants;
+
 public final class SportActivities {
 
-    private static final int RUNNING = 0;
-    private static final int WALKING = 1;
-    private static final int CYCLING = 2;
     private static final float RUNNING_MULTIPLIER = 1.535353535f;
     private static final float WALKING_MULTIPLIER = 1.14f;
     private static final float CYCLING_MULTIPLIER = 0.744444444f;
@@ -22,11 +21,11 @@ public final class SportActivities {
         int mph = (int) Math.round(MainHelper.mpsToMiph(speed));
 
         switch (activityType) {
-            case RUNNING:
+            case Constants.RUNNING:
                 return Math.ceil(getRunningMET(mph));
-            case WALKING:
+            case Constants.WALKING:
                 return Math.ceil(getWalkingMET(mph));
-            case CYCLING:
+            case Constants.CYCLING:
                 return Math.ceil(getCyclingMET(mph));
             default:
                 return -1;
@@ -49,11 +48,11 @@ public final class SportActivities {
 
     private static double getCalculatedMET(int activityType, int mph) {
         switch (activityType) {
-            case RUNNING:
+            case Constants.RUNNING:
                 return mph * RUNNING_MULTIPLIER;
-            case WALKING:
+            case Constants.WALKING:
                 return mph * WALKING_MULTIPLIER;
-            case CYCLING:
+            case Constants.CYCLING:
                 return mph * CYCLING_MULTIPLIER;
             default:
                 return -1;
@@ -76,7 +75,7 @@ public final class SportActivities {
 //                    case 5:
 //                    case 5:
             default:
-                return getCalculatedMET(RUNNING, mph);
+                return getCalculatedMET(Constants.RUNNING, mph);
         }
     }
 
@@ -91,7 +90,7 @@ public final class SportActivities {
             case 4:
                 return 3.5;
             default:
-                return getCalculatedMET(WALKING, mph);
+                return getCalculatedMET(Constants.WALKING, mph);
         }
     }
 
@@ -106,7 +105,7 @@ public final class SportActivities {
 //            case 18:
 //            case 20:
             default:
-                return getCalculatedMET(CYCLING, mph);
+                return getCalculatedMET(Constants.CYCLING, mph);
         }
     }
 

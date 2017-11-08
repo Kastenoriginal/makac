@@ -45,7 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         super.onStop();
         if (bound) {
-            trackerService.setCallbacks(null);
+            trackerService.setMapsCallbacks(null);
             unbindService(serviceConnection);
             bound = false;
         }
@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(current));
         } else {
-            Toast.makeText(this, "Location is null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Cannot get location", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -80,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             TrackerService.LocalBinder binder = (TrackerService.LocalBinder) service;
             trackerService = binder.getService();
             bound = true;
-            trackerService.setCallbacks(MapsActivity.this);
+            trackerService.setMapsCallbacks(MapsActivity.this);
         }
 
         @Override

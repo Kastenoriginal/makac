@@ -13,34 +13,45 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.widget.Toast;
 
-public class TrackerService extends Service implements LocationListener, MapsCallbackListener {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import sk.tuke.smart.makac.helpers.SportActivities;
+import sk.tuke.smart.makac.utils.Constants;
+import sk.tuke.smart.makac.utils.WorkoutStats;
+
+public class TrackerService extends Service implements LocationListener, MapsCallbackListener, StopwatchCallbackListener {
 
     private final Context context;
     private final IBinder binder = new LocalBinder();
 
-    private MapsCallbackListener callback;
+    private MapsCallbackListener mapsCallback;
+    private StopwatchCallbackListener stopwatchCallback;
 
-    boolean isGPSEnabled = false;
-    boolean canGetLocation = false;
+    private boolean canGetLocation = false;
 
-    Location location;
-    double latitude;
-    double longitude;
-
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 3;
+    private Location location;
+    private double latitude;
+    private double longitude;
 
     protected LocationManager locationManager;
 
-    @SuppressWarnings("unused")
+    private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+    private WorkoutStats workoutStats;
+    private List<Location> positionList = new ArrayList<>();
+
     public TrackerService() {
         this.context = null;
     }
 
     public TrackerService(Context context) {
         this.context = context;
-        getLocation();
     }
 
     @Nullable
@@ -49,8 +60,12 @@ public class TrackerService extends Service implements LocationListener, MapsCal
         return binder;
     }
 
-    public void setCallbacks(MapsCallbackListener callback) {
-        this.callback = callback;
+    public void setMapsCallbacks(MapsCallbackListener callback) {
+        this.mapsCallback = callback;
+    }
+
+    public void setStopwatchCallbacks(StopwatchCallbackListener callback) {
+        this.stopwatchCallback = callback;
     }
 
     @Override
@@ -71,33 +86,39 @@ public class TrackerService extends Service implements LocationListener, MapsCal
     }
 
     public Location getLocation() {
-        try {
-            locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-            isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (context == null) {
+            return null;
+        }
 
-            if (!isGPSEnabled) {
+        locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+
+        if (locationManager == null) {
+            return null;
+        }
+
+        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+
+        if (!isGPSEnabled) {
+            return null;
+        }
+
+        this.canGetLocation = true;
+
+        if (location == null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return null;
             }
-
-            this.canGetLocation = true;
-
-            if (location == null) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return null;
-                }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constants.MIN_TIME_BW_UPDATES, Constants.MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+            if (locationManager != null) {
+                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location != null) {
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
                 }
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
 
         return location;
     }
@@ -128,31 +149,81 @@ public class TrackerService extends Service implements LocationListener, MapsCal
         }
     }
 
-    public static void startWorkout() {
+    public void startWorkout(Context context) {
         // TODO: 11/6/2017
+        Toast.makeText(context.getApplicationContext(), "Received start workout broadcast", Toast.LENGTH_SHORT).show();
+
+        workoutStats = new WorkoutStats.Builder().duration(0).distance(0).pace(0).calories(0).build();
+        startTicking(context);
     }
 
-    public static void continueWorkout() {
+    public void continueWorkout(Context context) {
         // TODO: 11/6/2017
+        Toast.makeText(context.getApplicationContext(), "Received continue workout broadcast", Toast.LENGTH_SHORT).show();
     }
 
-    public static void pauseWorkout() {
+    public void pauseWorkout(Context context) {
         // TODO: 11/6/2017
+        Toast.makeText(context.getApplicationContext(), "Received pause workout broadcast", Toast.LENGTH_SHORT).show();
+        stopTicking();
     }
 
-    public static void stopWorkout() {
+    public void stopWorkout(Context context) {
         // TODO: 11/6/2017
+        Toast.makeText(context.getApplicationContext(), "Received stop workout broadcast", Toast.LENGTH_SHORT).show();
+        stopTicking();
     }
 
-    public static int countCalories() {
+    public int countCalories() {
         // TODO: 11/6/2017
         return -1;
     }
 
     @Override
     public void LocationChanged() {
-        if (callback != null) {
-            callback.LocationChanged();
+        if (mapsCallback != null) {
+            mapsCallback.LocationChanged();
+        }
+    }
+
+    private void startTicking(final Context context) {
+        final Intent intent = new Intent();
+        intent.putExtra(Constants.TAG_DURATION, workoutStats.getDuration());
+        intent.putExtra(Constants.TAG_DISTANCE, workoutStats.getDistance());
+        intent.putExtra(Constants.TAG_PACE, workoutStats.getPace());
+        intent.putExtra(Constants.TAG_CALORIES, workoutStats.getCalories());
+        intent.putExtra(Constants.TAG_STATE, Constants.STATE_RUNNING);
+        intent.putExtra(Constants.TAG_ACTIVITY_TYPE, Constants.RUNNING);
+
+        Runnable tickRunnable = new Runnable() {
+            @Override
+            public void run() {
+                intent.setAction(Constants.TICK);
+                context.sendBroadcast(intent);
+            }
+        };
+
+        executor.scheduleAtFixedRate(tickRunnable, 0, 1, TimeUnit.SECONDS);
+    }
+
+    private void stopTicking() {
+        executor.shutdown();
+    }
+
+    @Override
+    public void onTick(Intent intent) {
+        // TODO: 11/8/2017 update WorkoutStats model through setters
+        workoutStats.setDuration(workoutStats.getDuration() + 1);
+//        workoutStats.setDistance(5);
+//        workoutStats.setPace(5);
+//
+//        int activityType = intent.getIntExtra(Constants.TAG_STATE, -1);
+//        double calories = SportActivities.countCalories(activityType, 80, new ArrayList<Float>(), 5);
+//
+//        workoutStats.setCalories(calories);
+
+        if (stopwatchCallback != null) {
+            stopwatchCallback.onTick(intent);
         }
     }
 
